@@ -20,7 +20,10 @@ A full-stack web application that allows users to add products, submit reviews a
 ## Tech Stack:
 [to be added]
 
+
 ## Project Members:
 Jordan Asmono
 Marushen Baskaran 
 Parker Riches 
+
+## Team contributions shown on Wiki
