@@ -1,1 +1,14 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+}
 
+h1, h2 {
+  color: #333;
+}
+
+.product {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 10px;
+}
