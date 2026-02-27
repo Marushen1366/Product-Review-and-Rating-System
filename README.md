@@ -8,6 +8,15 @@ A full-stack web application that allows users to add products, submit reviews a
 - Submit reviews and ratings
 - View aggregated ratings
 
+## Front End:
+- Index is home page for all products and average ratings
+- Add products and reviews with "add_review" and "add_product"
+- Product lets you view a products details and ratings
+- Easily navigated, can access all screens from eachother
+- Css and Js folders for styling and code
+
+## Back End:
+
 ## Tech Stack:
 [to be added]
 
