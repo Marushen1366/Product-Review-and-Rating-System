@@ -1,5 +1,5 @@
-// Mock product data
-let products = [
+// Mock data stored in localStorage for persistence between pages
+let products = JSON.parse(localStorage.getItem("products")) || [
   {
     id: 1,
     name: "Wireless Mouse",
@@ -12,9 +12,14 @@ let products = [
   }
 ];
 
+// Save to localStorage
+function saveProducts() {
+  localStorage.setItem("products", JSON.stringify(products));
+}
+
 // Calculate average rating
 function getAverageRating(product) {
-  if (product.reviews.length === 0) return "No ratings";
+  if (!product.reviews.length) return "No ratings";
   const total = product.reviews.reduce((sum, r) => sum + r.rating, 0);
   return (total / product.reviews.length).toFixed(1);
 }
@@ -22,6 +27,7 @@ function getAverageRating(product) {
 // Render product list
 if (document.getElementById("product-list")) {
   const list = document.getElementById("product-list");
+  list.innerHTML = "";
 
   products.forEach(product => {
     const div = document.createElement("div");
@@ -30,7 +36,7 @@ if (document.getElementById("product-list")) {
       <h3>${product.name}</h3>
       <p>Category: ${product.category}</p>
       <p>Average Rating: ${getAverageRating(product)}</p>
-      <a href="product.html">View Details</a>
+      <a href="product.html?id=${product.id}">View Details</a>
     `;
     list.appendChild(div);
   });
@@ -43,13 +49,10 @@ if (productForm) {
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
-    if (!name) {
-      alert("Product name is required.");
-      return;
-    }
+    if (!name) return alert("Product name is required.");
 
     const newProduct = {
-      id: products.length + 1,
+      id: Date.now(),
       name,
       description: document.getElementById("description").value,
       category: document.getElementById("category").value,
@@ -57,43 +60,60 @@ if (productForm) {
     };
 
     products.push(newProduct);
+    saveProducts();
+
     alert("Product added!");
     window.location.href = "index.html";
   });
 }
 
+// Get product ID from URL
+function getProductId() {
+  const params = new URLSearchParams(window.location.search);
+  return Number(params.get("id"));
+}
+
 // Show product details
 if (document.getElementById("product-details")) {
-  const product = products[0]; // demo product
+  const id = getProductId();
+  const product = products.find(p => p.id === id) || products[0];
 
   const div = document.getElementById("product-details");
   div.innerHTML = `
     <h2>${product.name}</h2>
     <p>${product.description}</p>
-    <p>Average Rating: ${getAverageRating(product)}</p>
+    <p>Category: ${product.category}</p>
+    <p><strong>Average Rating:</strong> ${getAverageRating(product)}</p>
     <h3>Reviews</h3>
-    ${product.reviews.map(r => `<p>${r.rating}/5 - ${r.text}</p>`).join("")}
+    ${product.reviews.length
+      ? product.reviews.map(r => `<p>${r.rating}/5 - ${r.text}</p>`).join("")
+      : "<p>No reviews yet.</p>"}
   `;
+
+  // Pass product id to review page
+  document.getElementById("add_review-link").href = `add_review.html?id=${product.id}`;
 }
 
 // Add review
 const reviewForm = document.getElementById("review-form");
 if (reviewForm) {
+  const id = getProductId();
+  const product = products.find(p => p.id === id) || products[0];
+
   reviewForm.addEventListener("submit", e => {
     e.preventDefault();
 
     const rating = document.getElementById("rating").value;
-    if (!rating) {
-      alert("Rating is required.");
-      return;
-    }
+    if (!rating) return alert("Rating is required.");
 
-    products[0].reviews.push({
+    product.reviews.push({
       rating: Number(rating),
       text: document.getElementById("review-text").value
     });
 
+    saveProducts();
+
     alert("Review submitted!");
-    window.location.href = "product.html";
+    window.location.href = `product.html?id=${product.id}`;
   });
 }
