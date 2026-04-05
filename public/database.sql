@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS product_reviews;
+CREATE DATABASE IF NOT EXISTS product_review_system;
 USE product_reviews;
 
 DROP TABLE IF EXISTS reviews;
