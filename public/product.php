@@ -47,7 +47,7 @@ $stars = is_numeric($avg) ? str_repeat("★", $avgNum) . str_repeat("☆", 5 - $
 <body>
 	<header class="site-header">
 		<div class="container">
-			<a href="index.php" class="logo">Product Review</a>
+			<a href="index.php" class="logo">Product Reviews</a>
 			<nav class="nav-links">
 			<a href="index.php">Home</a>
 			<a href="add_product.php" class="nav-button">Add Product</a>
@@ -58,11 +58,23 @@ $stars = is_numeric($avg) ? str_repeat("★", $avgNum) . str_repeat("☆", 5 - $
 	<main class="container main-content">
 		<div class="product-page">
 			<div class="product-media">
-				<?php if (!empty($product['image'])): ?>
-					<img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="Product image">
-				<?php else: ?>
-					<img src="images/default-product.png" alt="Default product image">
-				<?php endif; ?>
+				<?php
+					if (!empty($product['image'])) {
+						$uploadPath = "uploads/" . $product['image'];
+						$seedPath = "images/" . $product['image'];
+
+					if (file_exists($uploadPath)) {
+						echo '<img src="' . htmlspecialchars($uploadPath) . '" alt="Product image">';
+					} elseif (file_exists($seedPath)) {
+						echo '<img src="' . htmlspecialchars($seedPath) . '" alt="Product image">';
+					} else {
+						echo '<img src="images/default-product.jpg" alt="Default product image">';
+					}
+				} 
+					else {
+						echo '<img src="images/default-product.jpg" alt="Default product image">';
+					}
+				?>
 			</div>
 
 			<div class="product-info">

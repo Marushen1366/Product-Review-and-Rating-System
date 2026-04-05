@@ -93,12 +93,10 @@ if (document.getElementById("product-details")) {
         : "<p>No reviews yet.</p>"}
     `;
 
-    // Pass correct product id to review page
     document.getElementById("add-review-link").href = `add_review.html?id=${product.id}`;
   }
 }
 
-// ADD REVIEW PAGE
 const reviewForm = document.getElementById("review-form");
 if (reviewForm) {
   const id = getProductId();

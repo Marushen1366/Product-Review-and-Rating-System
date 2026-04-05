@@ -10,7 +10,7 @@
 <body>
 	<header class="site-header">
 		<div class="container">
-			<a href="index.php" class="logo">Product Review</a>
+			<a href="index.php" class="logo">Product Reviews</a>
 			<nav class="nav-links">
 			<a href="index.php">Home</a>
 			<a href="add_product.php" class="nav-button">Add Product</a>
@@ -50,9 +50,19 @@
 				echo "<div class='card'>";
 
 				if (!empty($row['image'])) {
-					echo "<img class='card-image' src='uploads/" . htmlspecialchars($row['image']) . "' alt='Product image'>";
+				$uploadPath = "uploads/" . $row['image'];
+				$seedPath = "images/" . $row['image'];
+
+				if (file_exists($uploadPath)) {
+					echo "<img class='card-image' src='" . htmlspecialchars($uploadPath) . "' alt='Product image'>";
+				} elseif (file_exists($seedPath)) {
+					echo "<img class='card-image' src='" . htmlspecialchars($seedPath) . "' alt='Product image'>";
 				} else {
-					echo "<img class='card-image' src='images/default-product.png' alt='Default product image'>";
+					echo "<img class='card-image' src='images/default-product.jpg' alt='Default product image'>";
+				}
+			} 
+				else {
+					echo "<img class='card-image' src='images/default-product.jpg' alt='Default product image'>";
 				}
 
 				echo "<div class='card-body'>";
