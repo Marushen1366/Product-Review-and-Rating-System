@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS product_review_system;
-USE product_reviews;
+USE product_review_system;
 
 DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS products;
