@@ -46,11 +46,11 @@ Parker Riches
 1. Clone this repository.
 2. Install XAMPP.
 3. Move the project folder into your XAMPP `htdocs` folder.
-4. Start Apache and MySQL in XAMPP.
+4. Start Apache and MySQL in XAMPP.(If MySQL does not work when you click run, go to task manager and make sure no other mysql process is running)
 5. Open phpMyAdmin at: `http://localhost/phpMyAdmin'
 6. Import the `database.sql` file.
 7. Make sure the database connection settings in `db.php` match your local MySQL port.
-8. Open the project in your browser.
+8. Open the project in your browser. 
 
 ## Example
 - If project folder is named Product-Review-and-Rating-System open the link: 'http://localhost/Product-Review-and-Rating-System/public/index.php'
