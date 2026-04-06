@@ -2,7 +2,8 @@
 include 'db.php';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-	die("Invalid product ID.");
+    	header("Location: index.php");
+    	exit();
 }
 
 $id = (int) $_GET['id'];
@@ -19,7 +20,8 @@ $stmt->execute();
 $product = $stmt->get_result()->fetch_assoc();
 
 if (!$product) {
-    	die("Product not found.");
+    	header("Location: index.php");
+    	exit();
 }
 
 $reviewStmt = $conn->prepare("
@@ -41,82 +43,83 @@ $stars = is_numeric($avg) ? str_repeat("★", $avgNum) . str_repeat("☆", 5 - $
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><?php echo htmlspecialchars($product['name']); ?> - Product Review System</title>
+	<title><?php echo htmlspecialchars($product['name']); ?></title>
 	<link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-	<header class="site-header">
-		<div class="container">
-			<a href="index.php" class="logo">Product Reviews</a>
-			<nav class="nav-links">
-			<a href="index.php">Home</a>
-			<a href="add_product.php" class="nav-button">Add Product</a>
-			</nav>
+<header class="site-header">
+	<div class="container">
+	<a href="index.php" class="logo">Product Reviews</a>
+	<nav class="nav-links">
+	<a href="index.php">Home</a>
+	<a href="add_product.php" class="nav-button">Add Product</a>
+	</nav>
+	</div>
+</header>
+
+<main class="container main-content">
+<div class="product-page">
+
+<div class="product-media">
+<?php
+if (!empty($product['image'])) {
+    	$uploadPath = "uploads/" . $product['image'];
+    	$seedPath = "images/" . $product['image'];
+
+    	if (file_exists($uploadPath)) {
+       	echo '<img src="' . htmlspecialchars($uploadPath) . '">';
+    	} elseif (file_exists($seedPath)) {
+        	echo '<img src="' . htmlspecialchars($seedPath) . '">';
+    	} else {
+       	echo '<img src="images/default-product.jpg">';
+    }
+} else {
+    	echo '<img src="images/default-product.jpg">';
+}
+?>
+</div>
+
+<div class="product-info">
+	<h2><?php echo htmlspecialchars($product['name']); ?></h2>
+	<p class="muted">Category: <?php echo htmlspecialchars($product['category']); ?></p>
+	<p><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
+	<p class="rating"><?php echo $stars; ?> (<?php echo $avg; ?>)</p>
+
+	<div class="product-actions">
+		<a class="button" href="add_review.php?id=<?php echo $id; ?>">Add Review</a>
+		<a class="button" href="index.php">Back</a>
+
+		<form method="POST" action="delete_product.php">
+			<input type="hidden" name="id" value="<?php echo $id; ?>">
+			<button type="submit" class="button-danger">Delete Product</button>
+		</form>
+
+	</div>
+</div>
+
+</div>
+
+<div class="review-list">
+	<h3>Customer Reviews</h3>
+
+	<?php if ($reviews->num_rows > 0): ?>
+	<?php while ($review = $reviews->fetch_assoc()): ?>
+	<div class="review-item">
+		<div class="review-rating">
+			<?php
+			$reviewStars = str_repeat("★", (int)$review['rating']) . str_repeat("☆", 5 - (int)$review['rating']);
+			echo "$reviewStars (" . (int)$review['rating'] . "/5)";
+			?>
 		</div>
-	</header>
+		<div><?php echo htmlspecialchars($review['review_text']); ?></div>
+	</div>
+	<?php endwhile; ?>
+	<?php else: ?>
+	<p>No reviews yet.</p>
+	<?php endif; ?>
 
-	<main class="container main-content">
-		<div class="product-page">
-			<div class="product-media">
-				<?php
-					if (!empty($product['image'])) {
-						$uploadPath = "uploads/" . $product['image'];
-						$seedPath = "images/" . $product['image'];
-
-					if (file_exists($uploadPath)) {
-						echo '<img src="' . htmlspecialchars($uploadPath) . '" alt="Product image">';
-					} elseif (file_exists($seedPath)) {
-						echo '<img src="' . htmlspecialchars($seedPath) . '" alt="Product image">';
-					} else {
-						echo '<img src="images/default-product.jpg" alt="Default product image">';
-					}
-				} 
-					else {
-						echo '<img src="images/default-product.jpg" alt="Default product image">';
-					}
-				?>
-			</div>
-
-			<div class="product-info">
-				<h2><?php echo htmlspecialchars($product['name']); ?></h2>
-				<p class="muted">Category: <?php echo htmlspecialchars($product['category']); ?></p>
-				<p><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
-				<p class="rating"><span class="stars"><?php echo $stars; ?></span> (<?php echo $avg; ?>)</p>
-
-				<div class="product-actions">
-					<a class="button" href="add_review.php?id=<?php echo $id; ?>">Add Review</a>
-					<a class="button" href="index.php">Back</a>
-
-					<form method="POST" action="delete_product.php" onsubmit="return confirm('Delete this product?');">
-					<input type="hidden" name="id" value="<?php echo $id; ?>">
-					<button type="submit" class="button-danger">Delete Product</button>
-					</form>
-				</div>
-			</div>
-		</div>
-
-		<div class="review-list">
-			<h3>Customer Reviews</h3>
-
-			<?php if ($reviews->num_rows > 0): ?>
-			<?php while ($review = $reviews->fetch_assoc()): ?>
-				<div class="review-item">
-				<div class="review-rating">
-				<?php
-				$reviewStars = str_repeat("★", (int) $review['rating']) . str_repeat("☆", 5 - (int) $review['rating']);
-				echo "<span class='stars'>$reviewStars</span> (" . (int) $review['rating'] . "/5)";
-				?>
-				</div>
-				<div><?php echo htmlspecialchars($review['review_text']); ?></div>
-				<div class="muted" style="margin-top:8px; font-size:0.9rem;">
-				Posted: <?php echo htmlspecialchars($review['created_at']); ?>
-				</div>
-				</div>
-			<?php endwhile; ?>
-			<?php else: ?>
-			<p class="muted">No reviews yet.</p>
-			<?php endif; ?>
-		</div>
-	</main>
+</div>
+</main>
 </body>
 </html>
